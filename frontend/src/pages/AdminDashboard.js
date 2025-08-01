@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
-import { FaUser, FaUserFriends, FaClipboardList, FaCheckCircle } from "react-icons/fa";
+import {
+  FaUser,
+  FaUserFriends,
+  FaClipboardList,
+  FaCheckCircle,
+} from "react-icons/fa";
+import emailjs from "@emailjs/browser";
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -11,6 +18,7 @@ const AdminDashboard = () => {
     fetchAll();
   }, []);
 
+  // Fetch all data (users, requests, stats)
   const fetchAll = async () => {
     try {
       const userRes = await api.get("/admin/users");
@@ -21,24 +29,114 @@ const AdminDashboard = () => {
       setStats(statRes.data);
     } catch (err) {
       console.error("Failed to load admin data", err);
+      toast.error("Failed to load dashboard data");
     }
   };
 
+  // Update user role
   const updateRole = async (id, role) => {
-    await api.put(`/admin/users/${id}?role=${role}`);
-    fetchAll();
+    try {
+      await api.put(`/admin/users/${id}?role=${role}`);
+      toast.success("User role updated!");
+      fetchAll();
+    } catch (err) {
+      toast.error("Failed to update user role");
+      console.error(err);
+    }
   };
 
+  // Delete user
   const deleteUser = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      await api.delete(`/admin/users/${id}`);
-      fetchAll();
+      try {
+        await api.delete(`/admin/users/${id}`);
+        toast.success("User deleted successfully!");
+        fetchAll();
+      } catch (err) {
+        toast.error("Failed to delete user");
+        console.error(err);
+      }
     }
   };
 
-  const updateRequest = async (id, status) => {
-    await api.put(`/admin/requests/${id}?status=${status}`);
-    fetchAll();
+  /**
+   * Update request status AND send email notification
+   */
+  const updateRequest = async (
+    id,
+    status,
+    requesterEmail,
+    bloodGroup,
+    hospital,
+    contact,
+    name
+  ) => {
+    try {
+      await api.put(`/admin/requests/${id}?status=${status}`);
+      toast.success("Request status updated!");
+
+      // Send email notification if email exists
+      if (requesterEmail) {
+        await sendEmailNotification(
+          requesterEmail,
+          status,
+          bloodGroup,
+          hospital,
+          contact,
+          name
+        );
+      } else {
+        toast.warn("No email found for this requester");
+      }
+
+      fetchAll();
+    } catch (err) {
+      toast.error("Failed to update request status");
+      console.error(err);
+    }
+  };
+
+  /**
+   * Send email using EmailJS with dynamic content
+   */
+  const sendEmailNotification = async (
+    email,
+    status,
+    bloodGroup,
+    hospital,
+    contact,
+    name
+  ) => {
+    const serviceID = "service_zqbotch"; // EmailJS service ID
+    const templateID = "template_yskqjdj"; // EmailJS template ID
+    const userID = "5RjzDOp8WMJpDN6Vb"; // EmailJS public key
+
+    const isFulfilled = status === "fulfilled";
+
+    const templateParams = {
+      to_email: email,
+      name: name || email.split("@")[0] || "User", // fallback if name missing
+      blood_group: bloodGroup,
+      hospital: hospital || "Not specified",
+      contact: contact || "Not provided",
+      time: new Date().toLocaleString(),
+      status_message: isFulfilled
+        ? `Good news! Your blood request for ${bloodGroup} at ${hospital} has been FULFILLED.`
+        : `We regret to inform you that your blood request for ${bloodGroup} at ${hospital} has been CANCELLED.`,
+      emoji: isFulfilled ? "✅" : "❌",
+      bg_color: isFulfilled ? "#e6f4ea" : "#ffe6e6",
+      extra_message: isFulfilled
+        ? `Please contact ${contact} for further coordination.`
+        : `If this was unexpected, please contact support or try again later.`,
+    };
+
+    try {
+      await emailjs.send(serviceID, templateID, templateParams, userID);
+      toast.info(`Email notification sent to ${email}`);
+    } catch (error) {
+      console.error("EmailJS Error:", error);
+      toast.error("Failed to send email notification");
+    }
   };
 
   // Helper to calculate amount if backend doesn't provide it
@@ -241,7 +339,7 @@ const AdminDashboard = () => {
                   </span>
                 </td>
 
-                {/* FIXED Amount Calculation */}
+                {/* Amount Calculation */}
                 <td>₹{getAmountFromUrgency(r.urgency, r.amount)}</td>
 
                 <td>
@@ -272,7 +370,17 @@ const AdminDashboard = () => {
                   <select
                     className="form-select form-select-sm"
                     value={r.status}
-                    onChange={(e) => updateRequest(r.id, e.target.value)}
+                    onChange={(e) =>
+                      updateRequest(
+                        r.id,
+                        e.target.value,
+                        r.requesterEmail,
+                        r.bloodGroup,
+                        r.hospital,
+                        r.contact,
+                        r.name // pass name if available
+                      )
+                    }
                   >
                     <option value="pending">Pending</option>
                     <option value="fulfilled">Fulfilled</option>

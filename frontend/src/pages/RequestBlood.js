@@ -9,6 +9,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import api from "../services/api"; // Axios instance
+import emailjs from "@emailjs/browser";
 
 // Stripe public key (test)
 const stripePromise = loadStripe(
@@ -96,6 +97,28 @@ const RequestBlood = () => {
     setShowPayment(true);
   };
 
+  // Send confirmation email after request creation
+  const sendConfirmationEmail = (userEmail) => {
+    const serviceID = "service_zqbotch"; // your EmailJS service ID
+    const templateID = "template_pgo0h4v"; // your EmailJS template ID
+    const userID = "5RjzDOp8WMJpDN6Vb"; // your EmailJS public key
+
+    const emailData = {
+      to_email: userEmail,
+      subject: "Blood Request Confirmation",
+      message: `Your request for blood group ${form.bloodGroup} at ${form.hospital} has been received and is pending approval. We will notify you once it is fulfilled or updated.`,
+    };
+
+    emailjs
+      .send(serviceID, templateID, emailData, userID)
+      .then(() => {
+        console.log("Confirmation email sent");
+      })
+      .catch((error) => {
+        console.error("Email sending failed", error);
+      });
+  };
+
   const handlePaymentSuccess = async () => {
     try {
       const payload = {
@@ -108,12 +131,20 @@ const RequestBlood = () => {
         status: "pending",
       };
 
+      // Save request in backend
       await api.post("/receiver/requests", payload);
+
+      // Send confirmation email
+      const userEmail = localStorage.getItem("email");
+      if (userEmail) {
+        sendConfirmationEmail(userEmail);
+      }
 
       toast.success(
         `Payment of ₹${amount} successful! Blood request submitted successfully!`
       );
 
+      // Reset form
       setForm({
         bloodGroup: "",
         hospital: "",
