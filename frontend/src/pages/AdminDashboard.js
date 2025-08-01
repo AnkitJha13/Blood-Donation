@@ -41,9 +41,17 @@ const AdminDashboard = () => {
     fetchAll();
   };
 
+  // Helper to calculate amount if backend doesn't provide it
+  const getAmountFromUrgency = (urgency, amount) => {
+    if (amount !== null && amount !== undefined) return amount;
+    if (urgency === "high") return 500;
+    if (urgency === "normal") return 300;
+    return 100;
+  };
+
   return (
     <div className="container py-5">
-      {/* Heading with shadow */}
+      {/* Heading */}
       <div className="text-center mb-5">
         <h2
           className="fw-bold"
@@ -66,7 +74,6 @@ const AdminDashboard = () => {
 
       {/* Stats Cards */}
       <div className="row g-4 mb-5">
-        {/* Donors */}
         <div className="col-md-3 col-6">
           <div
             className="card text-center p-3 border-0 shadow stat-card"
@@ -74,7 +81,6 @@ const AdminDashboard = () => {
               background: "linear-gradient(135deg, #007bff, #0056b3)",
               color: "#fff",
               borderRadius: "15px",
-              transition: "transform 0.2s ease",
             }}
           >
             <FaUser size={30} className="mb-2" />
@@ -83,7 +89,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Receivers */}
         <div className="col-md-3 col-6">
           <div
             className="card text-center p-3 border-0 shadow stat-card"
@@ -91,7 +96,6 @@ const AdminDashboard = () => {
               background: "linear-gradient(135deg, #28a745, #1e7e34)",
               color: "#fff",
               borderRadius: "15px",
-              transition: "transform 0.2s ease",
             }}
           >
             <FaUserFriends size={30} className="mb-2" />
@@ -100,7 +104,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Pending */}
         <div className="col-md-3 col-6">
           <div
             className="card text-center p-3 border-0 shadow stat-card"
@@ -108,7 +111,6 @@ const AdminDashboard = () => {
               background: "linear-gradient(135deg, #ffc107, #e0a800)",
               color: "#212529",
               borderRadius: "15px",
-              transition: "transform 0.2s ease",
             }}
           >
             <FaClipboardList size={30} className="mb-2" />
@@ -117,7 +119,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Fulfilled */}
         <div className="col-md-3 col-6">
           <div
             className="card text-center p-3 border-0 shadow stat-card"
@@ -125,7 +126,6 @@ const AdminDashboard = () => {
               background: "linear-gradient(135deg, #17a2b8, #117a8b)",
               color: "#fff",
               borderRadius: "15px",
-              transition: "transform 0.2s ease",
             }}
           >
             <FaCheckCircle size={30} className="mb-2" />
@@ -206,6 +206,10 @@ const AdminDashboard = () => {
             <tr>
               <th>Requester</th>
               <th>Blood Group</th>
+              <th>Urgency</th>
+              <th>Amount</th>
+              <th>Amount Status</th>
+              <th>Phone</th>
               <th>Hospital</th>
               <th>Status</th>
               <th>Change Status</th>
@@ -214,7 +218,7 @@ const AdminDashboard = () => {
           <tbody>
             {requests.length === 0 && (
               <tr>
-                <td colSpan="5" className="text-center text-muted py-3">
+                <td colSpan="9" className="text-center text-muted py-3">
                   No requests found.
                 </td>
               </tr>
@@ -223,6 +227,33 @@ const AdminDashboard = () => {
               <tr key={r.id}>
                 <td>{r.requesterEmail}</td>
                 <td>{r.bloodGroup}</td>
+                <td>
+                  <span
+                    className={`badge ${
+                      r.urgency === "high"
+                        ? "bg-danger"
+                        : r.urgency === "normal"
+                        ? "bg-warning text-dark"
+                        : "bg-info"
+                    }`}
+                  >
+                    {r.urgency}
+                  </span>
+                </td>
+
+                {/* FIXED Amount Calculation */}
+                <td>₹{getAmountFromUrgency(r.urgency, r.amount)}</td>
+
+                <td>
+                  <span
+                    className={`badge ${
+                      r.amountStatus === "PAID" ? "bg-success" : "bg-danger"
+                    }`}
+                  >
+                    {r.amountStatus}
+                  </span>
+                </td>
+                <td>{r.contact}</td>
                 <td>{r.hospital}</td>
                 <td>
                   <span

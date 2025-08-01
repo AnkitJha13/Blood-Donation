@@ -6,47 +6,50 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "blood_requests")
 public class BloodRequest {
+
+    // Enum for amount status
+    public enum AmountStatus {
+        PAID
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "requester_id")
-    private User requester;  
+    private User requester;
 
     private String bloodGroup;
     private String hospital;
     private String contact;
     private String urgency;
+
     private String status = "pending";
     private LocalDate date = LocalDate.now();
+
     private Long donorId;
     private String requesterEmail;
 
-    
-    public String getRequesterEmail() {
-		return requesterEmail;
-	}
+    private Integer amount;
 
-	public void setRequesterEmail(String requesterEmail) {
-		this.requesterEmail = requesterEmail;
-	}
+    @Enumerated(EnumType.STRING)
+    @Column(name = "amount_status", nullable = false)
+    private AmountStatus amountStatus = AmountStatus.PAID;
 
-	public BloodRequest() {}
+    public BloodRequest() {}
 
-    public BloodRequest(User requester, String bloodGroup, String hospital, 
-                       String contact, String urgency) {
+    public BloodRequest(User requester, String bloodGroup, String hospital,
+                        String contact, String urgency) {
         this.requester = requester;
         this.bloodGroup = bloodGroup;
         this.hospital = hospital;
         this.contact = contact;
         this.urgency = urgency;
-      
     }
 
-  
-
-	public Long getId() { return id; }
+    // Getters and Setters
+    public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public User getRequester() { return requester; }
@@ -72,4 +75,13 @@ public class BloodRequest {
 
     public Long getDonorId() { return donorId; }
     public void setDonorId(Long donorId) { this.donorId = donorId; }
+
+    public String getRequesterEmail() { return requesterEmail; }
+    public void setRequesterEmail(String requesterEmail) { this.requesterEmail = requesterEmail; }
+
+    public Integer getAmount() { return amount; }
+    public void setAmount(Integer amount) { this.amount = amount; }
+
+    public AmountStatus getAmountStatus() { return amountStatus; }
+    public void setAmountStatus(AmountStatus amountStatus) { this.amountStatus = amountStatus; }
 }
