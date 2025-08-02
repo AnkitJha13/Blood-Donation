@@ -7,7 +7,8 @@ const ContactUs = () => {
   const [form, setForm] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    role: 'Donor' // default role
   });
 
   const handleChange = (e) => {
@@ -23,13 +24,22 @@ const ContactUs = () => {
     }
 
     const serviceID = 'service_zqbotch';    
-    const templateID = 'template_pgo0h4v';
+    const templateID = 'template_pgo0h4v'; // Use same template configured in EmailJS
     const userID = '5RjzDOp8WMJpDN6Vb';
 
-    emailjs.send(serviceID, templateID, form, userID)
+    // Send each field separately
+    const templateParams = {
+      name: form.name,
+      role: form.role,
+      email: form.email,
+      message: form.message,
+      time: new Date().toLocaleString()
+    };
+
+    emailjs.send(serviceID, templateID, templateParams, userID)
       .then(() => {
         toast.success("Thank you for your feedback!");
-        setForm({ name: '', email: '', message: '' });
+        setForm({ name: '', email: '', message: '', role: 'Donor' });
       })
       .catch((error) => {
         toast.error("Failed to send message. Try again later.");
@@ -71,6 +81,7 @@ const ContactUs = () => {
           <div className="card shadow p-4 border-0 rounded-3">
             <h4 className="fw-bold text-center mb-3">Send Us a Message</h4>
             <form onSubmit={handleSubmit}>
+              {/* Name */}
               <div className="mb-3">
                 <input
                   type="text"
@@ -82,6 +93,8 @@ const ContactUs = () => {
                   required
                 />
               </div>
+
+              {/* Email */}
               <div className="mb-3">
                 <input
                   type="email"
@@ -93,6 +106,22 @@ const ContactUs = () => {
                   required
                 />
               </div>
+
+              {/* Role */}
+              <div className="mb-3">
+                <select
+                  name="role"
+                  className="form-select"
+                  value={form.role}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="Donor">Donor</option>
+                  <option value="Receiver">Receiver</option>
+                </select>
+              </div>
+
+              {/* Message */}
               <div className="mb-3">
                 <textarea
                   name="message"
@@ -104,6 +133,8 @@ const ContactUs = () => {
                   required
                 />
               </div>
+
+              {/* Submit Button */}
               <div className="text-end">
                 <button type="submit" className="btn btn-danger px-4">
                   Send Message

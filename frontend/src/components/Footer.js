@@ -52,7 +52,7 @@ const Footer = () => {
           <div className="col-md-4 mb-3">
             <h6 className="fw-bold text-uppercase mb-2">Contact</h6>
             <p className="small mb-1">Email: ankitjha1304@gmail.com</p>
-            <p className="small mb-1">Phone: +91-9353847413</p>
+            <p className="small mb-1">Phone: +91-93538477254</p>
             <p className="small mb-0">Bangalore, India</p>
           </div>
         </div>

@@ -126,7 +126,7 @@ const AdminDashboard = () => {
       emoji: isFulfilled ? "✅" : "❌",
       bg_color: isFulfilled ? "#e6f4ea" : "#ffe6e6",
       extra_message: isFulfilled
-        ? `Please contact ${contact} for further coordination.`
+        ? `Please contact 93538477254 for further coordination.`
         : `If this was unexpected, please contact support or try again later.`,
     };
 
