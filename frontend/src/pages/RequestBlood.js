@@ -9,9 +9,9 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import api from "../services/api"; // Axios instance
-import emailjs from "@emailjs/browser";
+import Swal from "sweetalert2"; // Popup
 
-// Stripe public key (test)
+// Stripe public key
 const stripePromise = loadStripe(
   "pk_test_51PC17vSBExY56f70Np5EVAwM16w2A6P0HUeIh4tb040nYVkkRmoMvepLWXVEmmSQNUia7xPFF86yhFhPCRBFPAWc00pnij3RKX"
 );
@@ -25,7 +25,7 @@ const PaymentForm = ({ amount, onSuccess }) => {
     e.preventDefault();
     if (!stripe || !elements) return;
 
-    // Simulate successful payment
+    // Simulate payment success (replace with real Stripe confirm if needed)
     onSuccess();
   };
 
@@ -97,28 +97,6 @@ const RequestBlood = () => {
     setShowPayment(true);
   };
 
-  // Send confirmation email after request creation
-  const sendConfirmationEmail = (userEmail) => {
-    const serviceID = "service_zqbotch"; // your EmailJS service ID
-    const templateID = "template_pgo0h4v"; // your EmailJS template ID
-    const userID = "5RjzDOp8WMJpDN6Vb"; // your EmailJS public key
-
-    const emailData = {
-      to_email: userEmail,
-      subject: "Blood Request Confirmation",
-      message: `Your request for blood group ${form.bloodGroup} at ${form.hospital} has been received and is pending approval. We will notify you once it is fulfilled or updated.`,
-    };
-
-    emailjs
-      .send(serviceID, templateID, emailData, userID)
-      .then(() => {
-        console.log("Confirmation email sent");
-      })
-      .catch((error) => {
-        console.error("Email sending failed", error);
-      });
-  };
-
   const handlePaymentSuccess = async () => {
     try {
       const payload = {
@@ -127,22 +105,24 @@ const RequestBlood = () => {
         contact: form.contact,
         urgency: form.urgency,
         amount: amount,
-        amountStatus: "PAID", // changed from paymentStatus
+        amountStatus: "PAID",
         status: "pending",
       };
 
-      // Save request in backend
+      // Save request to backend
       await api.post("/receiver/requests", payload);
 
-      // Send confirmation email
-      const userEmail = localStorage.getItem("email");
-      if (userEmail) {
-        sendConfirmationEmail(userEmail);
-      }
-
-      toast.success(
-        `Payment of ₹${amount} successful! Blood request submitted successfully!`
-      );
+      // SweetAlert2 success popup
+      Swal.fire({
+        title: "Request Submitted!",
+        html: `
+          <p style="font-size:16px;">Payment of <strong>₹${amount}</strong> was successful.</p>
+          <p style="font-size:16px;">Your blood request has been submitted and is pending approval.</p>
+        `,
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#d33",
+      });
 
       // Reset form
       setForm({
@@ -168,19 +148,30 @@ const RequestBlood = () => {
         onSubmit={handleSubmit}
         className="row g-4 shadow p-4 rounded bg-light"
       >
+        {/* Blood Group Dropdown */}
         <div className="col-md-6">
-          <input
-            type="text"
+          <select
             name="bloodGroup"
-            className="form-control form-control-lg"
-            placeholder="Blood Group (e.g. A+)"
+            className="form-select form-select-lg"
             value={form.bloodGroup}
             onChange={handleChange}
             required
-            pattern="^(A|B|AB|O)[+-]$"
-            title="Enter valid blood group (e.g. A+, O-, AB+)"
-          />
+          >
+            <option value="" disabled>
+              Select Blood Group
+            </option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+          </select>
         </div>
+
+        {/* Hospital Name */}
         <div className="col-md-6">
           <input
             type="text"
@@ -192,6 +183,8 @@ const RequestBlood = () => {
             required
           />
         </div>
+
+        {/* Contact Number */}
         <div className="col-md-6">
           <input
             type="tel"
@@ -205,6 +198,8 @@ const RequestBlood = () => {
             title="Enter valid contact number"
           />
         </div>
+
+        {/* Urgency */}
         <div className="col-md-6">
           <select
             name="urgency"
@@ -221,6 +216,8 @@ const RequestBlood = () => {
             <option value="low">Low - ₹100</option>
           </select>
         </div>
+
+        {/* Submit Button */}
         <div className="col-12 text-center">
           <button type="submit" className="btn btn-danger btn-lg px-5 shadow">
             Submit Request
