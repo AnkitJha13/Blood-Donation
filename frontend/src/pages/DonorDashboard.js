@@ -4,8 +4,6 @@ import { useAuth } from '../utils/auth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
-
 const DonorDashboard = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +14,6 @@ const DonorDashboard = () => {
     const fetchRequests = async () => {
       try {
         const response = await api.get("/donor/available-requests");
-
         setRequests(response.data);
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -65,10 +62,9 @@ const DonorDashboard = () => {
                     )}
                   </h5>
                   <p className="card-text">
-                    <strong>Hospital:</strong> {req.hospital}<br />
-                    <strong>Location:</strong> {req.location}<br />
-                    <strong>Urgency:</strong> {req.urgency}<br />
-                    <strong>Contact:</strong> {req.contactNumber}
+                    <strong>Hospital:</strong> {req.hospital || "Not Provided"}<br />
+                    <strong>Urgency:</strong> {req.urgency || "Not Specified"}<br />
+                    <strong>Contact:</strong> {req.contactNumber || req.contact || "Not Provided"}
                   </p>
                   {user.bloodGroup === req.bloodGroup && (
                     <button
