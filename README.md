@@ -105,11 +105,6 @@ The **Blood Donation Management System** is a full-stack, role-based platform de
 - **Email Integration:** EmailJS  
 - **Notifications:** Automated Email System
 
----
-
-## 📅 Project Duration
-
-- **2 Months**
 
 ---
 
