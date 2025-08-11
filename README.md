@@ -25,6 +25,9 @@ The **Blood Donation Management System** is a full-stack, role-based platform de
 
 <img width="1893" height="923" alt="register" src="https://github.com/user-attachments/assets/53ed502c-25fc-4771-89df-82472ebc1268" />
 
+<img width="1903" height="914" alt="login" src="https://github.com/user-attachments/assets/551275b8-952f-46b5-a1e7-ee0ee8eb0e40" />
+
+
 
 
 ---
