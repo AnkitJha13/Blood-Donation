@@ -25,10 +25,8 @@ The **Blood Donation Management System** is a full-stack, role-based platform de
 > Replace the placeholder images below with actual screenshots from your app.
 
 ![Dashboard Screenshot](https://via.placeholder.com/900x500?text=Dashboard+Screenshot)
-![Register Page](<img width="1893" height="923" alt="register" src="https://github.com/user-attachments/assets/60e5eccb-029e-4135-b328-6efdeeec1ca3" />
-)
-![Login Page](<img width="1903" height="914" alt="login" src="https://github.com/user-attachments/assets/24589e99-b72d-47c4-936c-25a0031fad56" />
-)
+![Register Page](<img width="1893" height="923" alt="register" src="https://github.com/user-attachments/assets/60e5eccb-029e-4135-b328-6efdeeec1ca3" />)
+![Login Page](<img width="1903" height="914" alt="login" src="https://github.com/user-attachments/assets/24589e99-b72d-47c4-936c-25a0031fad56" />)
 
 
 ---
