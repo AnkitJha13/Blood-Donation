@@ -46,6 +46,22 @@ The **Blood Donation Management System** is a full-stack, role-based platform de
 
 
 
+
+### Donor
+
+<img width="1920" height="917" alt="Donor-1" src="https://github.com/user-attachments/assets/4a5f3724-07d5-4740-999a-85eedbaa84fb" />
+
+<img width="1920" height="918" alt="Donor-2" src="https://github.com/user-attachments/assets/eeee5b71-e94c-4bac-87bf-8e07502dea69" />
+
+<img width="1897" height="917" alt="Donor-3" src="https://github.com/user-attachments/assets/e58d4f76-d4cb-4d56-bb41-6a070b97f50d" />
+
+
+
+
+
+### Receiver
+
+
 ---
 
 ## ⚙️ Usage
